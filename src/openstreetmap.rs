@@ -166,7 +166,7 @@ impl Openstreetmap {
 
         let resp = self
             .client
-            .get(&format!("{}search", self.endpoint))
+            .get(format!("{}search", self.endpoint))
             .query(&query)
             .send()?
             .error_for_status()?;
@@ -192,7 +192,7 @@ where
     fn forward(&self, place: &str) -> Result<Vec<Point<T>>, GeocodingError> {
         let resp = self
             .client
-            .get(&format!("{}search", self.endpoint))
+            .get(format!("{}search", self.endpoint))
             .query(&[(&"q", place), (&"format", &String::from("geojson"))])
             .send()?
             .error_for_status()?;
@@ -217,7 +217,7 @@ where
     fn reverse(&self, point: &Point<T>) -> Result<Option<String>, GeocodingError> {
         let resp = self
             .client
-            .get(&format!("{}reverse", self.endpoint))
+            .get(format!("{}reverse", self.endpoint))
             .query(&[
                 (&"lon", &point.x().to_f64().unwrap().to_string()),
                 (&"lat", &point.y().to_f64().unwrap().to_string()),
@@ -355,7 +355,7 @@ mod test {
         let osm =
             Openstreetmap::new_with_endpoint("https://nominatim.openstreetmap.org/".to_string());
         let address = "Schwabing, München";
-        let res = osm.forward(&address);
+        let res = osm.forward(address);
         assert_eq!(res.unwrap(), vec![Point::new(11.5884858, 48.1700887)]);
     }
 
@@ -366,7 +366,7 @@ mod test {
             (-0.13806939125061035, 51.51989264641164),
             (-0.13427138328552246, 51.52319711775629),
         );
-        let params = OpenstreetmapParams::new(&"UCL Centre for Advanced Spatial Analysis")
+        let params = OpenstreetmapParams::new("UCL Centre for Advanced Spatial Analysis")
             .with_addressdetails(true)
             .with_viewbox(&viewbox)
             .build();
@@ -380,7 +380,7 @@ mod test {
     fn forward_test() {
         let osm = Openstreetmap::new();
         let address = "Schwabing, München";
-        let res = osm.forward(&address);
+        let res = osm.forward(address);
         assert_eq!(res.unwrap(), vec![Point::new(11.5884858, 48.1700887)]);
     }
 

@@ -96,7 +96,7 @@ pub struct Opencage<'a> {
     remaining: Arc<Mutex<Option<i32>>>,
 }
 
-impl<'a> Opencage<'a> {
+impl Opencage<'_> {
     /// Create a new OpenCage geocoding instance
     pub fn new(api_key: String) -> Self {
         let mut headers = HeaderMap::new();
@@ -288,7 +288,7 @@ impl<'a> Opencage<'a> {
     }
 }
 
-impl<'a, T> Reverse<T> for Opencage<'a>
+impl<T> Reverse<T> for Opencage<'_>
 where
     T: Float + DeserializeOwned + Debug,
 {
@@ -333,7 +333,7 @@ where
     }
 }
 
-impl<'a, T> Forward<T> for Opencage<'a>
+impl<T> Forward<T> for Opencage<'_>
 where
     T: Float + DeserializeOwned + Debug,
 {
@@ -664,7 +664,7 @@ mod test {
     fn forward_test() {
         let oc = Opencage::new("dcdbf0d783374909b3debee728c7cc10".to_string());
         let address = "Schwabing, München";
-        let res = oc.forward(&address);
+        let res = oc.forward(address);
         assert_eq!(
             res.unwrap(),
             vec![Point(Coord {
@@ -690,7 +690,7 @@ mod test {
             minimum_lonlat: Point::new(-0.13806939125061035, 51.51989264641164),
             maximum_lonlat: Point::new(-0.13427138328552246, 51.52319711775629),
         };
-        let res = oc.forward_full(&address, bbox).unwrap();
+        let res = oc.forward_full(address, bbox).unwrap();
         let first_result = &res.results[0];
         assert!(first_result.formatted.contains("UCL"));
     }
@@ -702,7 +702,7 @@ mod test {
             Point::new(-0.13806939125061035, 51.51989264641164),
             Point::new(-0.13427138328552246, 51.52319711775629),
         );
-        let res = oc.forward_full(&address, bbox).unwrap();
+        let res = oc.forward_full(address, bbox).unwrap();
         let first_result = &res.results[0];
         assert!(
             first_result.formatted.contains("UCL")
@@ -717,7 +717,7 @@ mod test {
             Point::from((-0.13806939125061035, 51.51989264641164)),
             Point::from((-0.13427138328552246, 51.52319711775629)),
         );
-        let res = oc.forward_full(&address, bbox).unwrap();
+        let res = oc.forward_full(address, bbox).unwrap();
         let first_result = &res.results[0];
         assert!(
             first_result.formatted.contains("UCL")
@@ -732,7 +732,7 @@ mod test {
             (-0.13806939125061035, 51.51989264641164),
             (-0.13427138328552246, 51.52319711775629),
         );
-        let res = oc.forward_full(&address, bbox).unwrap();
+        let res = oc.forward_full(address, bbox).unwrap();
         let first_result = &res.results[0];
         assert!(first_result
             .formatted
@@ -742,7 +742,7 @@ mod test {
     fn forward_full_test_nobox() {
         let oc = Opencage::new("dcdbf0d783374909b3debee728c7cc10".to_string());
         let address = "Moabit, Berlin, Germany";
-        let res = oc.forward_full(&address, NOBOX).unwrap();
+        let res = oc.forward_full(address, NOBOX).unwrap();
         let first_result = &res.results[0];
         assert_eq!(first_result.formatted, "Moabit, Berlin, Germany");
     }
