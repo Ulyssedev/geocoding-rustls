@@ -176,7 +176,7 @@ impl GeoAdmin {
         ];
 
         if let Some(bb) = params.bbox.cloned().as_mut() {
-            if vec!["4326", "3857"].contains(&self.sr.as_str()) {
+            if ["4326", "3857"].contains(&self.sr.as_str()) {
                 *bb = InputBounds::new(
                     wgs84_to_lv03(&bb.minimum_lonlat),
                     wgs84_to_lv03(&bb.maximum_lonlat),
@@ -193,7 +193,7 @@ impl GeoAdmin {
 
         let resp = self
             .client
-            .get(&format!("{}SearchServer", self.endpoint))
+            .get(format!("{}SearchServer", self.endpoint))
             .query(&query)
             .send()?
             .error_for_status()?;
@@ -229,7 +229,7 @@ where
     fn forward(&self, place: &str) -> Result<Vec<Point<T>>, GeocodingError> {
         let resp = self
             .client
-            .get(&format!("{}SearchServer", self.endpoint))
+            .get(format!("{}SearchServer", self.endpoint))
             .query(&[
                 ("searchText", place),
                 ("type", "locations"),
@@ -242,7 +242,7 @@ where
             .error_for_status()?;
         let res: GeoAdminForwardResponse<T> = resp.json()?;
         // return easting & northing consistent
-        let results = if vec!["2056", "21781"].contains(&self.sr.as_str()) {
+        let results = if ["2056", "21781"].contains(&self.sr.as_str()) {
             res.features
                 .iter()
                 .map(|feature| Point::new(feature.properties.y, feature.properties.x)) // y = west-east, x = north-south
@@ -269,7 +269,7 @@ where
     fn reverse(&self, point: &Point<T>) -> Result<Option<String>, GeocodingError> {
         let resp = self
             .client
-            .get(&format!("{}MapServer/identify", self.endpoint))
+            .get(format!("{}MapServer/identify", self.endpoint))
             .query(&[
                 (
                     "geometry",
@@ -453,7 +453,7 @@ mod test {
     fn new_with_sr_forward_test() {
         let geoadmin = GeoAdmin::new().with_sr("2056");
         let address = "Seftigenstrasse 264, 3084 Wabern";
-        let res = geoadmin.forward(&address);
+        let res = geoadmin.forward(address);
         assert_eq!(res.unwrap(), vec![Point::new(2_600_968.75, 1_197_427.0)]);
     }
 
@@ -462,7 +462,7 @@ mod test {
         let geoadmin =
             GeoAdmin::new().with_endpoint("https://api3.geo.admin.ch/rest/services/api/");
         let address = "Seftigenstrasse 264, 3084 Wabern";
-        let res = geoadmin.forward(&address);
+        let res = geoadmin.forward(address);
         assert_eq!(
             res.unwrap(),
             vec![Point::new(7.451352119445801, 46.92793655395508)]
@@ -473,7 +473,7 @@ mod test {
     fn with_sr_forward_full_test() {
         let geoadmin = GeoAdmin::new().with_sr("2056");
         let bbox = InputBounds::new((2_600_967.75, 1_197_426.0), (2_600_969.75, 1_197_428.0));
-        let params = GeoAdminParams::new(&"Seftigenstrasse Bern")
+        let params = GeoAdminParams::new("Seftigenstrasse Bern")
             .with_origins("address")
             .with_bbox(&bbox)
             .build();
@@ -489,7 +489,7 @@ mod test {
     fn forward_full_test() {
         let geoadmin = GeoAdmin::new();
         let bbox = InputBounds::new((7.4513398, 46.92792859), (7.4513662, 46.9279467));
-        let params = GeoAdminParams::new(&"Seftigenstrasse Bern")
+        let params = GeoAdminParams::new("Seftigenstrasse Bern")
             .with_origins("address")
             .with_bbox(&bbox)
             .build();
@@ -505,7 +505,7 @@ mod test {
     fn forward_test() {
         let geoadmin = GeoAdmin::new();
         let address = "Seftigenstrasse 264, 3084 Wabern";
-        let res = geoadmin.forward(&address);
+        let res = geoadmin.forward(address);
         assert_eq!(
             res.unwrap(),
             vec![Point::new(7.451352119445801, 46.92793655395508)]

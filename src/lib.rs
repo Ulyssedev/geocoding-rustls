@@ -80,7 +80,7 @@ pub enum GeocodingError {
 /// let res = oc.reverse(&p).unwrap();
 /// assert_eq!(
 ///     res,
-///     Some("Carrer de Calatrava, 68, 08017 Barcelona, Spain".to_string())
+///     Some("Carrer de Calatrava, 64, 08017 Barcelona, Spain".to_string())
 /// );
 /// ```
 pub trait Reverse<T>
